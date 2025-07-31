@@ -57,20 +57,31 @@ def get_team_schedule_by_year(connection, team_id, year):
     try:
         cursor = connection.cursor()
         query = """
-            SELECT g.game_id, g.home_team_id, g.away_team_id, g.stadium, 
-                   g.home_score, g.away_score, g.is_overtime, 
-                   g.date_time, g.game_status, g.week_number
+            SELECT 
+                away_team.city, away_team.name, home_team.city, home_team.name,
+                g.away_score, g.home_score, g.week_number
             FROM game AS g
+            JOIN team AS home_team ON g.home_team_id = home_team.team_id
+            JOIN team AS away_team ON g.away_team_id = away_team.team_id
             JOIN season AS s ON s.season_id = g.season_id
             WHERE s.team_id = %s AND s.year = %s;
         """
         cursor.execute(query, (team_id, year))
         games = cursor.fetchall()
         cursor.close()
-        return games
+        return [clean_score(game) for game in games]
     except Exception as e:
         print(f"An error occurred while fetching the schedule: {e}")
         return []
+
+def clean_score(game):
+    awayTeam = f"{game[0]} {game[1]}"
+    homeTeam = f"{game[2]} {game[3]}"
+    weekNumber = game[6] if game[6] is not None else "N/A"
+    if game[4] is not None and game[5] is not None:
+        return f"{weekNumber}: {awayTeam} {game[4]} vs {game[5]} {homeTeam}"
+    else:
+        return f"{weekNumber}: {awayTeam} vs {homeTeam}"
 
 def main():
     connection = connect_to_database()
