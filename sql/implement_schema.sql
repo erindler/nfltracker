@@ -25,7 +25,8 @@ CREATE TABLE Game (
     is_overtime BOOLEAN DEFAULT FALSE,
     date_time TIMESTAMP NOT NULL,
     game_status VARCHAR(20),
-    week_number INTEGER
+    week_number INTEGER,
+    season_id INTEGER REFERENCES Season(season_id) ON DELETE SET NULL
 );
 
 -- Season table: tracks which teams participate in a given season
@@ -34,12 +35,4 @@ CREATE TABLE Season (
     team_id INTEGER NOT NULL REFERENCES Team(team_id) ON DELETE CASCADE,
     year INTEGER NOT NULL,
     UNIQUE(team_id, year) -- A team can only appear once per season year
-);
-
--- SeasonGame table: links games to a season
-CREATE TABLE SeasonGame (
-    season_game_id SERIAL PRIMARY KEY,
-    season_id INTEGER NOT NULL REFERENCES Season(season_id) ON DELETE CASCADE,
-    game_id INTEGER NOT NULL REFERENCES Game(game_id) ON DELETE CASCADE,
-    UNIQUE(season_id, game_id) -- Prevent duplicate links
 );

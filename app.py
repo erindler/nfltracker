@@ -1,6 +1,6 @@
 import os
 import psycopg2
-from team import Team
+from entities.team import Team
 
 def connect_to_database():
     try:
@@ -33,6 +33,9 @@ def console_loop(connection):
             team_input = input("Enter the number of the team: ")
             selected_team = teams[int(team_input) - 1]
             print(f"Selected Team: {selected_team.name} ({selected_team.city})")
+            year = input("Enter the year for the schedule (e.g., 2023): ")
+            for game in get_team_schedule_by_year(connection, selected_team.team_id, year):
+                print(game)
         elif choice == "2":
             print("Exiting console...")
             break
@@ -48,6 +51,25 @@ def get_all_teams(connection):
         return teams
     except Exception as e:
         print(f"An error occurred while fetching teams: {e}")
+        return []
+    
+def get_team_schedule_by_year(connection, team_id, year):
+    try:
+        cursor = connection.cursor()
+        query = """
+            SELECT g.game_id, g.home_team_id, g.away_team_id, g.stadium, 
+                   g.home_score, g.away_score, g.is_overtime, 
+                   g.date_time, g.game_status, g.week_number
+            FROM game AS g
+            JOIN season AS s ON s.season_id = g.season_id
+            WHERE s.team_id = %s AND s.year = %s;
+        """
+        cursor.execute(query, (team_id, year))
+        games = cursor.fetchall()
+        cursor.close()
+        return games
+    except Exception as e:
+        print(f"An error occurred while fetching the schedule: {e}")
         return []
 
 def main():
