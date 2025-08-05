@@ -1,0 +1,223 @@
+-- Team table
+CREATE TABLE Team (
+    team_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    conference VARCHAR(10),
+    division VARCHAR(20),
+    city VARCHAR(50)
+);
+
+-- Stadium table
+CREATE TABLE Stadium (
+    stadium_id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    location VARCHAR(100)
+);
+
+-- Season table: one row per season year
+CREATE TABLE Season (
+    season_id SERIAL PRIMARY KEY,
+    year INTEGER NOT NULL UNIQUE
+);
+
+-- Game table
+CREATE TABLE Game (
+    game_id SERIAL PRIMARY KEY,
+    home_team_id INTEGER NOT NULL REFERENCES Team(team_id) ON DELETE CASCADE,
+    away_team_id INTEGER NOT NULL REFERENCES Team(team_id) ON DELETE CASCADE,
+    stadium_id INTEGER REFERENCES Stadium(stadium_id) ON DELETE SET NULL,
+    home_score INTEGER,
+    away_score INTEGER,
+    is_overtime BOOLEAN DEFAULT FALSE,
+    date_time TIMESTAMP NOT NULL,
+    game_status VARCHAR(20),
+    week_number INTEGER,
+    season_id INTEGER REFERENCES Season(season_id) ON DELETE SET NULL
+);
+
+
+-- Insert all 32 NFL teams with explicit IDs
+INSERT INTO Team (team_id, name, conference, division, city) VALUES
+(1, 'Browns', 'AFC', 'North', 'Cleveland'),
+(2, 'Bengals', 'AFC', 'North', 'Cincinnati'),
+(3, 'Ravens', 'AFC', 'North', 'Baltimore'),
+(4, 'Steelers', 'AFC', 'North', 'Pittsburgh'),
+(5, 'Bills', 'AFC', 'East', 'Buffalo'),
+(6, 'Dolphins', 'AFC', 'East', 'Miami'),
+(7, 'Patriots', 'AFC', 'East', 'New England'),
+(8, 'Jets', 'AFC', 'East', 'New York'),
+(9, 'Texans', 'AFC', 'South', 'Houston'),
+(10, 'Colts', 'AFC', 'South', 'Indianapolis'),
+(11, 'Jaguars', 'AFC', 'South', 'Jacksonville'),
+(12, 'Titans', 'AFC', 'South', 'Tennessee'),
+(13, 'Broncos', 'AFC', 'West', 'Denver'),
+(14, 'Chiefs', 'AFC', 'West', 'Kansas City'),
+(15, 'Raiders', 'AFC', 'West', 'Las Vegas'),
+(16, 'Chargers', 'AFC', 'West', 'Los Angeles'),
+(17, 'Cowboys', 'NFC', 'East', 'Dallas'),
+(18, 'Giants', 'NFC', 'East', 'New York'),
+(19, 'Eagles', 'NFC', 'East', 'Philadelphia'),
+(20, 'Commanders', 'NFC', 'East', 'Washington'),
+(21, 'Bears', 'NFC', 'North', 'Chicago'),
+(22, 'Lions', 'NFC', 'North', 'Detroit'),
+(23, 'Packers', 'NFC', 'North', 'Green Bay'),
+(24, 'Vikings', 'NFC', 'North', 'Minnesota'),
+(25, 'Falcons', 'NFC', 'South', 'Atlanta'),
+(26, 'Panthers', 'NFC', 'South', 'Carolina'),
+(27, 'Saints', 'NFC', 'South', 'New Orleans'),
+(28, 'Buccaneers', 'NFC', 'South', 'Tampa Bay'),
+(29, 'Cardinals', 'NFC', 'West', 'Arizona'),
+(30, 'Rams', 'NFC', 'West', 'Los Angeles'),
+(31, '49ers', 'NFC', 'West', 'San Francisco'),
+(32, 'Seahawks', 'NFC', 'West', 'Seattle');
+
+
+-- Insert all 32 NFL stadiums with explicit IDs
+INSERT INTO Stadium (stadium_id, name, location) VALUES
+(1, 'Cleveland Browns Stadium', 'Cleveland, OH'),
+(2, 'Paycor Stadium', 'Cincinnati, OH'),
+(3, 'M&T Bank Stadium', 'Baltimore, MD'),
+(4, 'Acrisure Stadium', 'Pittsburgh, PA'),
+(5, 'Highmark Stadium', 'Orchard Park, NY'),
+(6, 'Hard Rock Stadium', 'Miami Gardens, FL'),
+(7, 'Gillette Stadium', 'Foxborough, MA'),
+(8, 'MetLife Stadium', 'East Rutherford, NJ'),
+(9, 'NRG Stadium', 'Houston, TX'),
+(10, 'Lucas Oil Stadium', 'Indianapolis, IN'),
+(11, 'EverBank Stadium', 'Jacksonville, FL'),
+(12, 'Nissan Stadium', 'Nashville, TN'),
+(13, 'Empower Field at Mile High', 'Denver, CO'),
+(14, 'Arrowhead Stadium', 'Kansas City, MO'),
+(15, 'Allegiant Stadium', 'Las Vegas, NV'),
+(16, 'SoFi Stadium', 'Inglewood, CA'),
+(17, 'AT&T Stadium', 'Arlington, TX'),
+(18, 'MetLife Stadium', 'East Rutherford, NJ'),
+(19, 'Lincoln Financial Field', 'Philadelphia, PA'),
+(20, 'FedExField', 'Landover, MD'),
+(21, 'Soldier Field', 'Chicago, IL'),
+(22, 'Ford Field', 'Detroit, MI'),
+(23, 'Lambeau Field', 'Green Bay, WI'),
+(24, 'U.S. Bank Stadium', 'Minneapolis, MN'),
+(25, 'Mercedes-Benz Stadium', 'Atlanta, GA'),
+(26, 'Bank of America Stadium', 'Charlotte, NC'),
+(27, 'Caesars Superdome', 'New Orleans, LA'),
+(28, 'Raymond James Stadium', 'Tampa, FL'),
+(29, 'State Farm Stadium', 'Glendale, AZ'),
+(30, 'SoFi Stadium', 'Inglewood, CA'),
+(31, 'Levis Stadium', 'Santa Clara, CA'),
+(32, 'Lumen Field', 'Seattle, WA');
+
+
+-- Insert seasons for 2024 and 2025
+INSERT INTO Season (season_id, year) VALUES
+(1, 2024),
+(2, 2025);
+
+
+-- Insert the first three games for all 32 NFL teams for 2025 and 2024 (sample round-robin style, update as needed)
+INSERT INTO Game (
+    game_id, home_team_id, away_team_id, stadium_id, home_score, away_score,
+    is_overtime, date_time, game_status, week_number, season_id
+) VALUES
+-- 2025 Week 1
+(1, 1, 2, 1, NULL, NULL, FALSE, '2025-09-07 13:00:00', 'Scheduled', 1, 2),
+(2, 3, 4, 3, NULL, NULL, FALSE, '2025-09-07 13:00:00', 'Scheduled', 1, 2),
+(3, 5, 6, 5, NULL, NULL, FALSE, '2025-09-07 13:00:00', 'Scheduled', 1, 2),
+(4, 7, 8, 7, NULL, NULL, FALSE, '2025-09-07 13:00:00', 'Scheduled', 1, 2),
+(5, 9, 10, 9, NULL, NULL, FALSE, '2025-09-07 13:00:00', 'Scheduled', 1, 2),
+(6, 11, 12, 11, NULL, NULL, FALSE, '2025-09-07 13:00:00', 'Scheduled', 1, 2),
+(7, 13, 14, 13, NULL, NULL, FALSE, '2025-09-07 13:00:00', 'Scheduled', 1, 2),
+(8, 15, 16, 15, NULL, NULL, FALSE, '2025-09-07 13:00:00', 'Scheduled', 1, 2),
+(9, 17, 18, 17, NULL, NULL, FALSE, '2025-09-07 13:00:00', 'Scheduled', 1, 2),
+(10, 19, 20, 19, NULL, NULL, FALSE, '2025-09-07 13:00:00', 'Scheduled', 1, 2),
+(11, 21, 22, 21, NULL, NULL, FALSE, '2025-09-07 13:00:00', 'Scheduled', 1, 2),
+(12, 23, 24, 23, NULL, NULL, FALSE, '2025-09-07 13:00:00', 'Scheduled', 1, 2),
+(13, 25, 26, 25, NULL, NULL, FALSE, '2025-09-07 13:00:00', 'Scheduled', 1, 2),
+(14, 27, 28, 27, NULL, NULL, FALSE, '2025-09-07 13:00:00', 'Scheduled', 1, 2),
+(15, 29, 30, 29, NULL, NULL, FALSE, '2025-09-07 13:00:00', 'Scheduled', 1, 2),
+(16, 31, 32, 31, NULL, NULL, FALSE, '2025-09-07 13:00:00', 'Scheduled', 1, 2),
+-- 2025 Week 2
+(17, 2, 3, 2, NULL, NULL, FALSE, '2025-09-14 13:00:00', 'Scheduled', 2, 2),
+(18, 4, 5, 4, NULL, NULL, FALSE, '2025-09-14 13:00:00', 'Scheduled', 2, 2),
+(19, 6, 7, 6, NULL, NULL, FALSE, '2025-09-14 13:00:00', 'Scheduled', 2, 2),
+(20, 8, 9, 8, NULL, NULL, FALSE, '2025-09-14 13:00:00', 'Scheduled', 2, 2),
+(21, 10, 11, 10, NULL, NULL, FALSE, '2025-09-14 13:00:00', 'Scheduled', 2, 2),
+(22, 12, 13, 12, NULL, NULL, FALSE, '2025-09-14 13:00:00', 'Scheduled', 2, 2),
+(23, 14, 15, 14, NULL, NULL, FALSE, '2025-09-14 13:00:00', 'Scheduled', 2, 2),
+(24, 16, 17, 16, NULL, NULL, FALSE, '2025-09-14 13:00:00', 'Scheduled', 2, 2),
+(25, 18, 19, 18, NULL, NULL, FALSE, '2025-09-14 13:00:00', 'Scheduled', 2, 2),
+(26, 20, 21, 20, NULL, NULL, FALSE, '2025-09-14 13:00:00', 'Scheduled', 2, 2),
+(27, 22, 23, 22, NULL, NULL, FALSE, '2025-09-14 13:00:00', 'Scheduled', 2, 2),
+(28, 24, 25, 24, NULL, NULL, FALSE, '2025-09-14 13:00:00', 'Scheduled', 2, 2),
+(29, 26, 27, 26, NULL, NULL, FALSE, '2025-09-14 13:00:00', 'Scheduled', 2, 2),
+(30, 28, 29, 28, NULL, NULL, FALSE, '2025-09-14 13:00:00', 'Scheduled', 2, 2),
+(31, 30, 31, 30, NULL, NULL, FALSE, '2025-09-14 13:00:00', 'Scheduled', 2, 2),
+(32, 32, 1, 32, NULL, NULL, FALSE, '2025-09-14 13:00:00', 'Scheduled', 2, 2),
+-- 2025 Week 3
+(33, 3, 1, 3, NULL, NULL, FALSE, '2025-09-21 13:00:00', 'Scheduled', 3, 2),
+(34, 5, 2, 5, NULL, NULL, FALSE, '2025-09-21 13:00:00', 'Scheduled', 3, 2),
+(35, 7, 4, 7, NULL, NULL, FALSE, '2025-09-21 13:00:00', 'Scheduled', 3, 2),
+(36, 9, 6, 9, NULL, NULL, FALSE, '2025-09-21 13:00:00', 'Scheduled', 3, 2),
+(37, 11, 8, 11, NULL, NULL, FALSE, '2025-09-21 13:00:00', 'Scheduled', 3, 2),
+(38, 13, 10, 13, NULL, NULL, FALSE, '2025-09-21 13:00:00', 'Scheduled', 3, 2),
+(39, 15, 12, 15, NULL, NULL, FALSE, '2025-09-21 13:00:00', 'Scheduled', 3, 2),
+(40, 17, 14, 17, NULL, NULL, FALSE, '2025-09-21 13:00:00', 'Scheduled', 3, 2),
+(41, 19, 16, 19, NULL, NULL, FALSE, '2025-09-21 13:00:00', 'Scheduled', 3, 2),
+(42, 21, 18, 21, NULL, NULL, FALSE, '2025-09-21 13:00:00', 'Scheduled', 3, 2),
+(43, 23, 20, 23, NULL, NULL, FALSE, '2025-09-21 13:00:00', 'Scheduled', 3, 2),
+(44, 25, 22, 25, NULL, NULL, FALSE, '2025-09-21 13:00:00', 'Scheduled', 3, 2),
+(45, 27, 24, 27, NULL, NULL, FALSE, '2025-09-21 13:00:00', 'Scheduled', 3, 2),
+(46, 29, 26, 29, NULL, NULL, FALSE, '2025-09-21 13:00:00', 'Scheduled', 3, 2),
+(47, 31, 28, 31, NULL, NULL, FALSE, '2025-09-21 13:00:00', 'Scheduled', 3, 2),
+(48, 2, 30, 2, NULL, NULL, FALSE, '2025-09-21 13:00:00', 'Scheduled', 3, 2),
+-- 2024 Week 1
+(49, 1, 2, 1, 24, 17, FALSE, '2024-09-08 13:00:00', 'Scheduled', 1, 1),
+(50, 3, 4, 3, 13, 27, FALSE, '2024-09-08 13:00:00', 'Scheduled', 1, 1),
+(51, 5, 6, 5, 31, 10, FALSE, '2024-09-08 13:00:00', 'Scheduled', 1, 1),
+(52, 7, 8, 7, 20, 23, FALSE, '2024-09-08 13:00:00', 'Scheduled', 1, 1),
+(53, 9, 10, 9, 17, 14, FALSE, '2024-09-08 13:00:00', 'Scheduled', 1, 1),
+(54, 11, 12, 11, 28, 21, FALSE, '2024-09-08 13:00:00', 'Scheduled', 1, 1),
+(55, 13, 14, 13, 16, 19, FALSE, '2024-09-08 13:00:00', 'Scheduled', 1, 1),
+(56, 15, 16, 15, 10, 13, FALSE, '2024-09-08 13:00:00', 'Scheduled', 1, 1),
+(57, 17, 18, 17, 27, 24, FALSE, '2024-09-08 13:00:00', 'Scheduled', 1, 1),
+(58, 19, 20, 19, 21, 28, FALSE, '2024-09-08 13:00:00', 'Scheduled', 1, 1),
+(59, 21, 22, 21, 14, 31, FALSE, '2024-09-08 13:00:00', 'Scheduled', 1, 1),
+(60, 23, 24, 23, 19, 16, FALSE, '2024-09-08 13:00:00', 'Scheduled', 1, 1),
+(61, 25, 26, 25, 23, 20, FALSE, '2024-09-08 13:00:00', 'Scheduled', 1, 1),
+(62, 27, 28, 27, 17, 10, FALSE, '2024-09-08 13:00:00', 'Scheduled', 1, 1),
+(63, 29, 30, 29, 31, 13, FALSE, '2024-09-08 13:00:00', 'Scheduled', 1, 1),
+(64, 31, 32, 31, 24, 28, FALSE, '2024-09-08 13:00:00', 'Scheduled', 1, 1),
+-- 2024 Week 2
+(65, 2, 3, 2, 20, 14, FALSE, '2024-09-15 13:00:00', 'Scheduled', 2, 1),
+(66, 4, 5, 4, 17, 24, FALSE, '2024-09-15 13:00:00', 'Scheduled', 2, 1),
+(67, 6, 7, 6, 27, 21, FALSE, '2024-09-15 13:00:00', 'Scheduled', 2, 1),
+(68, 8, 9, 8, 13, 31, FALSE, '2024-09-15 13:00:00', 'Scheduled', 2, 1),
+(69, 10, 11, 10, 28, 19, FALSE, '2024-09-15 13:00:00', 'Scheduled', 2, 1),
+(70, 12, 13, 12, 24, 10, FALSE, '2024-09-15 13:00:00', 'Scheduled', 2, 1),
+(71, 14, 15, 14, 19, 13, FALSE, '2024-09-15 13:00:00', 'Scheduled', 2, 1),
+(72, 16, 17, 16, 21, 27, FALSE, '2024-09-15 13:00:00', 'Scheduled', 2, 1),
+(73, 18, 19, 18, 10, 28, FALSE, '2024-09-15 13:00:00', 'Scheduled', 2, 1),
+(74, 20, 21, 20, 31, 17, FALSE, '2024-09-15 13:00:00', 'Scheduled', 2, 1),
+(75, 22, 23, 22, 16, 23, FALSE, '2024-09-15 13:00:00', 'Scheduled', 2, 1),
+(76, 24, 25, 24, 14, 20, FALSE, '2024-09-15 13:00:00', 'Scheduled', 2, 1),
+(77, 26, 27, 26, 13, 19, FALSE, '2024-09-15 13:00:00', 'Scheduled', 2, 1),
+(78, 28, 29, 28, 28, 24, FALSE, '2024-09-15 13:00:00', 'Scheduled', 2, 1),
+(79, 30, 31, 30, 27, 16, FALSE, '2024-09-15 13:00:00', 'Scheduled', 2, 1),
+(80, 32, 1, 32, 23, 13, FALSE, '2024-09-15 13:00:00', 'Scheduled', 2, 1),
+-- 2024 Week 3
+(81, 3, 1, 3, 17, 24, FALSE, '2024-09-22 13:00:00', 'Scheduled', 3, 1),
+(82, 5, 2, 5, 27, 13, FALSE, '2024-09-22 13:00:00', 'Scheduled', 3, 1),
+(83, 7, 4, 7, 10, 31, FALSE, '2024-09-22 13:00:00', 'Scheduled', 3, 1),
+(84, 9, 6, 9, 24, 19, FALSE, '2024-09-22 13:00:00', 'Scheduled', 3, 1),
+(85, 11, 8, 11, 21, 28, FALSE, '2024-09-22 13:00:00', 'Scheduled', 3, 1),
+(86, 13, 10, 13, 19, 14, FALSE, '2024-09-22 13:00:00', 'Scheduled', 3, 1),
+(87, 15, 12, 15, 13, 27, FALSE, '2024-09-22 13:00:00', 'Scheduled', 3, 1),
+(88, 17, 14, 17, 28, 23, FALSE, '2024-09-22 13:00:00', 'Scheduled', 3, 1),
+(89, 19, 16, 19, 14, 20, FALSE, '2024-09-22 13:00:00', 'Scheduled', 3, 1),
+(90, 21, 18, 21, 31, 17, FALSE, '2024-09-22 13:00:00', 'Scheduled', 3, 1),
+(91, 23, 20, 23, 16, 10, FALSE, '2024-09-22 13:00:00', 'Scheduled', 3, 1),
+(92, 25, 22, 25, 23, 19, FALSE, '2024-09-22 13:00:00', 'Scheduled', 3, 1),
+(93, 27, 24, 27, 20, 13, FALSE, '2024-09-22 13:00:00', 'Scheduled', 3, 1),
+(94, 29, 26, 29, 24, 28, FALSE, '2024-09-22 13:00:00', 'Scheduled', 3, 1),
+(95, 31, 28, 31, 17, 21, FALSE, '2024-09-22 13:00:00', 'Scheduled', 3, 1),
+(96, 2, 30, 2, 28, 16, FALSE, '2024-09-22 13:00:00', 'Scheduled', 3, 1);
