@@ -64,9 +64,9 @@ def get_team_schedule_by_year(connection, team_id, year):
             JOIN team AS home_team ON g.home_team_id = home_team.team_id
             JOIN team AS away_team ON g.away_team_id = away_team.team_id
             JOIN season AS s ON s.season_id = g.season_id
-            WHERE s.team_id = %s AND s.year = %s;
+            WHERE (g.home_team_id = %s OR g.away_team_id = %s) AND s.year = %s;
         """
-        cursor.execute(query, (team_id, year))
+        cursor.execute(query, (team_id, team_id, year))
         games = cursor.fetchall()
         cursor.close()
         return [clean_score(game) for game in games]
